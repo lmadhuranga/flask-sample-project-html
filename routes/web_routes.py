@@ -27,7 +27,7 @@ def users():
 
     pagination = user_service.get_users(
         page=page,
-        per_page=2
+        per_page=10
     )
 
     return render_template(
