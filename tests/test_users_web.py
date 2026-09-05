@@ -158,7 +158,7 @@ def test_delete_user_not_found(client):
     assert b"User not found." in response.data
 
 
-def test_users_pagination(client):
+def test_users_pagination_first_page(client):
     for i in range(25):
         client.post(
             "/users/create",
@@ -172,11 +172,22 @@ def test_users_pagination(client):
 
     assert response.status_code == 200
 
+    # First page contains users 0-9
     assert b"User 0" in response.data
     assert b"User 9" in response.data
+
+    # Second page users should not be displayed
     assert b"User 10" not in response.data
 
-def test_users_pagination_page_two(client):
+    # Pagination should always be visible
+    assert b"Previous" in response.data
+    assert b"Next" in response.data
+
+    # Page 1 should be active
+    assert b'class="page-button active"' in response.data
+    assert b"1" in response.data
+
+def test_users_pagination_last_page(client):
     for i in range(25):
         client.post(
             "/users/create",
@@ -186,10 +197,42 @@ def test_users_pagination_page_two(client):
             }
         )
 
-    response = client.get("/users?page=2")
+    response = client.get("/users?page=3")
 
     assert response.status_code == 200
 
-    assert b"User 10" in response.data
-    assert b"User 19" in response.data
-    assert b"User 0" not in response.data
+    # Last page contains user 20-24
+    assert b"User 20" in response.data
+    assert b"User 24" in response.data
+
+    # Previous should be available
+    assert b"Previous" in response.data
+
+    # Next should still be visible but disabled
+    assert b"Next" in response.data
+    assert b"class=\"page-button disabled\"" in response.data
+
+def test_users_pagination_single_page(client):
+    for i in range(5):
+        client.post(
+            "/users/create",
+            data={
+                "name": f"User {i}",
+                "email": f"user{i}@gmail.com"
+            }
+        )
+
+    response = client.get("/users?page=1")
+
+    assert response.status_code == 200
+
+    # Users should be displayed
+    assert b"User 0" in response.data
+    assert b"User 4" in response.data
+
+    # Pagination should still be visible
+    assert b"Previous" in response.data
+    assert b"Next" in response.data
+
+    # Both should be disabled
+    assert response.data.count(b'class="page-button disabled"') == 2

@@ -108,3 +108,8 @@ input {
     background: #666;
     font-weight: bold;
 }
+
+.page-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
