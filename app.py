@@ -2,6 +2,7 @@ from flask import Flask
 from flasgger import Swagger
 from extensions import db 
 from routes.web_routes import web_bp
+from seed import seed_fake_users
 
 def create_app(test_config=None):
     """
@@ -33,6 +34,7 @@ def create_app(test_config=None):
 
     with app.app_context():
         db.create_all()
+        seed_fake_users()
 
     return app
 

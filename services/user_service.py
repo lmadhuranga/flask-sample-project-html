@@ -18,7 +18,7 @@ class UserService:
         Returns:
             dict: Pagination information and the list of users.
         """
-        pagination = User.query.paginate(
+        pagination = User.query.order_by(User.id.desc()).paginate(
             page=page,
             per_page=per_page,
             error_out=False
