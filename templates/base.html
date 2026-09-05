@@ -1,53 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
-        {% block title %}
-        User Management
-        {% endblock %}
+        {% block title %}User Management{% endblock %}
     </title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
 
 <body>
 
-    <nav>
-        <h2>User Management</h2>
-
-        <a href="{{ url_for('web.users') }}">
-            Users
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('web.users') }}">
+            User Management
         </a>
-    </nav>
 
-    <main>
+        <a
+            href="{{ url_for('web.create_user') }}"
+            class="btn btn-primary"
+        >
+            Add User
+        </a>
+    </div>
+</nav>
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
+<div class="container mt-4">
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-
-        {% for category, message in messages %}
-
-        <div class="alert {{ category }}">
-            {{ message }}
-        </div>
-
-        {% endfor %}
-
+            {% for category, message in messages %}
+                <div class="alert
+                    {% if category == 'success' %}
+                        alert-success
+                    {% else %}
+                        alert-danger
+                    {% endif %}
+                ">
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endif %}
+    {% endwith %}
 
-        {% endwith %}
+    {% block content %}{% endblock %}
 
-        {% block content %}
-        {% endblock %}
+</div>
 
-    </main>
+<!-- Bootstrap JS -->
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+</script>
 
 </body>
-
 </html>

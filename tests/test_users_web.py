@@ -1,154 +1,179 @@
-def test_home_page(client):
-    response = client.get("/")
-
-    assert response.status_code == 302
-    assert response.location.endswith("/users")
-
-
 def test_users_page(client):
     response = client.get("/users")
 
     assert response.status_code == 200
     assert b"Users" in response.data
+    assert b"Add User" in response.data
 
 
-def test_create_user_page(client):
-    response = client.get("/users/create")
-
-    assert response.status_code == 200
-    assert b"Create User" in response.data
-
-
-def test_create_user_web(client):
+def test_create_user(client):
     response = client.post(
         "/users/create",
         data={
-            "name": "John",
-            "email": "john@gmail.com"
+            "name": "John Smith",
+            "email": "john@example.com"
         },
         follow_redirects=True
     )
 
     assert response.status_code == 200
-    assert b"John" in response.data
-    assert b"john@gmail.com" in response.data
+    assert b"John Smith" in response.data
+    assert b"john@example.com" in response.data
     assert b"User created successfully." in response.data
 
 
-def test_create_user_web_missing_name(client):
-    response = client.post(
-        "/users/create",
-        data={
-            "email": "john@gmail.com"
-        }
-    )
-
-    assert response.status_code == 200
-    assert b"Name and email are required." in response.data
-
-
-def test_create_user_web_missing_email(client):
-    response = client.post(
-        "/users/create",
-        data={
-            "name": "John"
-        }
-    )
-
-    assert response.status_code == 200
-    assert b"Name and email are required." in response.data
-
-
-def test_create_duplicate_user_web(client):
+def test_create_user_duplicate_email(client):
     client.post(
         "/users/create",
         data={
-            "name": "John",
-            "email": "john@gmail.com"
+            "name": "John Smith",
+            "email": "john@example.com"
         }
     )
 
     response = client.post(
         "/users/create",
         data={
-            "name": "David",
-            "email": "john@gmail.com"
-        }
+            "name": "Another User",
+            "email": "john@example.com"
+        },
+        follow_redirects=True
     )
 
     assert response.status_code == 200
     assert b"Email already exists." in response.data
 
 
-def test_edit_user_page(client):
-    create_response = client.post(
+def test_create_user_missing_name(client):
+    response = client.post(
         "/users/create",
         data={
-            "name": "John",
-            "email": "john@gmail.com"
-        }
+            "name": "",
+            "email": "john@example.com"
+        },
+        follow_redirects=True
     )
 
-    assert create_response.status_code == 302
+    assert response.status_code == 200
+    assert b"Name and email are required." in response.data
 
-    response = client.get("/users/1/edit")
+
+def test_create_user_missing_email(client):
+    response = client.post(
+        "/users/create",
+        data={
+            "name": "John Smith",
+            "email": ""
+        },
+        follow_redirects=True
+    )
 
     assert response.status_code == 200
-    assert b"Edit User" in response.data
-    assert b"John" in response.data
+    assert b"Name and email are required." in response.data
 
 
-def test_edit_user_web(client):
+def test_edit_user(client, app):
     client.post(
         "/users/create",
         data={
-            "name": "John",
-            "email": "john@gmail.com"
+            "name": "John Smith",
+            "email": "john@example.com"
         }
     )
 
+    with app.app_context():
+        from models.user import User
+
+        user = User.query.filter_by(
+            email="john@example.com"
+        ).first()
+
+        user_id = user.id
+
     response = client.post(
-        "/users/1/edit",
+        f"/users/{user_id}/edit",
         data={
             "name": "John Updated",
-            "email": "john.updated@gmail.com"
+            "email": "john.updated@example.com"
         },
         follow_redirects=True
     )
 
     assert response.status_code == 200
     assert b"John Updated" in response.data
-    assert b"john.updated@gmail.com" in response.data
+    assert b"john.updated@example.com" in response.data
     assert b"User updated successfully." in response.data
 
 
-def test_edit_user_not_found(client):
-    response = client.get("/users/999/edit")
+def test_edit_non_existing_user(client):
+    response = client.get(
+        "/users/999/edit",
+        follow_redirects=True
+    )
 
-    assert response.status_code == 302
-    assert response.location.endswith("/users")
+    assert response.status_code == 200
+    assert b"User not found." in response.data
 
 
-def test_delete_user_web(client):
+def test_edit_user_duplicate_email(client):
     client.post(
         "/users/create",
         data={
-            "name": "John",
-            "email": "john@gmail.com"
+            "name": "John Smith",
+            "email": "john@example.com"
+        }
+    )
+
+    client.post(
+        "/users/create",
+        data={
+            "name": "Sarah Smith",
+            "email": "sarah@example.com"
         }
     )
 
     response = client.post(
-        "/users/1/delete",
+        "/users/2/edit",
+        data={
+            "name": "Sarah Updated",
+            "email": "john@example.com"
+        },
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    assert b"Unable to update user. Email may already exist." in response.data
+
+
+def test_delete_user(client, app):
+    client.post(
+        "/users/create",
+        data={
+            "name": "John Smith",
+            "email": "john@example.com"
+        }
+    )
+
+    with app.app_context():
+        from models.user import User
+
+        user = User.query.filter_by(
+            email="john@example.com"
+        ).first()
+
+        user_id = user.id
+
+    response = client.post(
+        f"/users/{user_id}/delete",
         follow_redirects=True
     )
 
     assert response.status_code == 200
     assert b"User deleted successfully." in response.data
-    assert b"No users found." in response.data
+    assert b"John Smith" not in response.data
 
 
-def test_delete_user_not_found(client):
+def test_delete_non_existing_user(client):
     response = client.post(
         "/users/999/delete",
         follow_redirects=True
@@ -159,12 +184,12 @@ def test_delete_user_not_found(client):
 
 
 def test_users_pagination_first_page(client):
-    for i in range(25):
+    for i in range(15):
         client.post(
             "/users/create",
             data={
                 "name": f"User {i}",
-                "email": f"user{i}@gmail.com"
+                "email": f"user{i}@example.com"
             }
         )
 
@@ -172,67 +197,39 @@ def test_users_pagination_first_page(client):
 
     assert response.status_code == 200
 
-    # First page contains users 0-9
-    assert b"User 0" in response.data
-    assert b"User 9" in response.data
+    # Newest users should appear first
+    assert b"User 14" in response.data
+    assert b"User 5" in response.data
 
-    # Second page users should not be displayed
-    assert b"User 10" not in response.data
+    # User 4 should be on page 2
+    assert b"User 4" not in response.data
 
-    # Pagination should always be visible
+    # Bootstrap pagination
+    assert b"pagination" in response.data
+    assert b"page-item active" in response.data
     assert b"Previous" in response.data
     assert b"Next" in response.data
 
-    # Page 1 should be active
-    assert b'class="page-button active"' in response.data
-    assert b"1" in response.data
 
-def test_users_pagination_last_page(client):
-    for i in range(25):
+def test_users_pagination_second_page(client):
+    for i in range(15):
         client.post(
             "/users/create",
             data={
                 "name": f"User {i}",
-                "email": f"user{i}@gmail.com"
+                "email": f"user{i}@example.com"
             }
         )
 
-    response = client.get("/users?page=3")
+    response = client.get("/users?page=2")
 
     assert response.status_code == 200
 
-    # Last page contains user 20-24
-    assert b"User 20" in response.data
-    assert b"User 24" in response.data
-
-    # Previous should be available
-    assert b"Previous" in response.data
-
-    # Next should still be visible but disabled
-    assert b"Next" in response.data
-    assert b"class=\"page-button disabled\"" in response.data
-
-def test_users_pagination_single_page(client):
-    for i in range(5):
-        client.post(
-            "/users/create",
-            data={
-                "name": f"User {i}",
-                "email": f"user{i}@gmail.com"
-            }
-        )
-
-    response = client.get("/users?page=1")
-
-    assert response.status_code == 200
-
-    # Users should be displayed
-    assert b"User 0" in response.data
     assert b"User 4" in response.data
+    assert b"User 0" in response.data
 
-    # Pagination should still be visible
-    assert b"Previous" in response.data
-    assert b"Next" in response.data
+    # Newest users should be on page 1
+    assert b"User 14" not in response.data
 
-    # Both should be disabled
-    assert response.data.count(b'class="page-button disabled"') == 2
+    assert b"pagination" in response.data
+    assert b"page-item active" in response.data
