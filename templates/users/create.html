@@ -15,7 +15,7 @@ Create User
         <div>
             <label>Name</label>
 
-            <input type="text" name="name" required >
+            <input type="text" name="name" required>
         </div>
 
         <br>
@@ -23,7 +23,7 @@ Create User
         <div>
             <label>Email</label>
 
-            <input type="email" name="email" required >
+            <input type="email" name="email" required>
         </div>
 
         <br>
@@ -31,7 +31,9 @@ Create User
         <button type="submit">
             Create User
         </button>
-
+        <a href="{{ url_for('web.users') }}" class="button">
+            Cancel
+        </a>
     </form>
 
 </div>

@@ -156,3 +156,40 @@ def test_delete_user_not_found(client):
 
     assert response.status_code == 200
     assert b"User not found." in response.data
+
+
+def test_users_pagination(client):
+    for i in range(25):
+        client.post(
+            "/users/create",
+            data={
+                "name": f"User {i}",
+                "email": f"user{i}@gmail.com"
+            }
+        )
+
+    response = client.get("/users?page=1")
+
+    assert response.status_code == 200
+
+    assert b"User 0" in response.data
+    assert b"User 9" in response.data
+    assert b"User 10" not in response.data
+
+def test_users_pagination_page_two(client):
+    for i in range(25):
+        client.post(
+            "/users/create",
+            data={
+                "name": f"User {i}",
+                "email": f"user{i}@gmail.com"
+            }
+        )
+
+    response = client.get("/users?page=2")
+
+    assert response.status_code == 200
+
+    assert b"User 10" in response.data
+    assert b"User 19" in response.data
+    assert b"User 0" not in response.data

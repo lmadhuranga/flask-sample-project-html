@@ -23,16 +23,18 @@ def home():
 
 @web_bp.route("/users")
 def users():
-    """
-    Display all users in the HTML application.
-    """
-    users = user_service.get_users()
+    page = request.args.get("page", 1, type=int)
+
+    pagination = user_service.get_users(
+        page=page,
+        per_page=2
+    )
 
     return render_template(
         "users/list.html",
-        users=users
+        users=pagination["users"],
+        pagination=pagination
     )
-
 
 @web_bp.route("/users/create", methods=["GET", "POST"])
 def create_user():

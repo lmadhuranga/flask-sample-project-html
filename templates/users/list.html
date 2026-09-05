@@ -12,10 +12,7 @@ Users
 
         <h1>Users</h1>
 
-        <a
-            href="{{ url_for('web.create_user') }}"
-            class="button"
-        >
+        <a href="{{ url_for('web.create_user') }}" class="button">
             Add User
         </a>
 
@@ -46,23 +43,14 @@ Users
 
                 <td>
 
-                    <a
-                        href="{{ url_for('web.edit_user', user_id=user.id) }}"
-                        class="button"
-                    >
+                    <a href="{{ url_for('web.edit_user', user_id=user.id) }}" class="button">
                         Edit
                     </a>
 
-                    <form
-                        action="{{ url_for('web.delete_user', user_id=user.id) }}"
-                        method="POST"
-                        style="display:inline;"
-                    >
+                    <form action="{{ url_for('web.delete_user', user_id=user.id) }}" method="POST"
+                        style="display:inline;">
 
-                        <button
-                            type="submit"
-                            onclick="return confirm('Are you sure you want to delete this user?');"
-                        >
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this user?');">
                             Delete
                         </button>
 
@@ -86,6 +74,45 @@ Users
 
     </table>
 
-</div>
+    {% if pagination.pages > 1 %}
+
+    <div class="pagination"> 
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('web.users', page=pagination.prev_num) }}" class="page-button">
+            &laquo; Previous
+        </a>
+        {% endif %}
+
+
+        {% for page_num in range(1, pagination.pages + 1) %}
+
+        {% if page_num == pagination.page %}
+
+        <span class="page-button active">
+            {{ page_num }}
+        </span>
+
+        {% else %}
+
+        <a href="{{ url_for('web.users', page=page_num) }}" class="page-button">
+            {{ page_num }}
+        </a>
+
+        {% endif %}
+
+        {% endfor %}
+
+
+        {% if pagination.has_next %}
+        <a href="{{ url_for('web.users', page=pagination.next_num) }}" class="page-button">
+            Next &raquo;
+        </a>
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+    
+</div> 
 
 {% endblock %}
