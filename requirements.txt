@@ -5,3 +5,4 @@ marshmallow
 marshmallow-sqlalchemy
 flasgger
 pytest
+pytest-cov

@@ -1,16 +1,20 @@
 # Flask User Management Application
 
-A Flask-based User Management application demonstrating **REST API development and server-rendered HTML CRUD operations** using Flask, SQLAlchemy, SQLite, Marshmallow, Flasgger, and pytest.
+A beginner-to-intermediate Flask application demonstrating how to build a **User Management system** using:
 
-The project is designed as a learning project that demonstrates a clean separation between:
+* Python
+* Flask
+* Flask-SQLAlchemy
+* SQLite
+* Marshmallow
+* Service Layer
+* REST API
+* HTML/Jinja CRUD
+* Swagger/OpenAPI
+* Pytest
+* Test Coverage
 
-* Routes
-* Services
-* Models
-* Schemas
-* HTML templates
-* REST APIs
-* Tests
+The project is intentionally kept simple so that the Flask concepts are easy to understand before moving to more advanced architecture.
 
 ---
 
@@ -19,87 +23,58 @@ The project is designed as a learning project that demonstrates a clean separati
 ### REST API
 
 * Get all users
-* Get user by ID
-* Create user
-* Update user
-* Delete user
-* JSON responses
+* Get a user by ID
+* Create a user
+* Update a user
+* Delete a user
 * Request validation
 * Duplicate email handling
-* HTTP status codes
-* Swagger API documentation
+* HTTP error handling
 
 ### HTML Web Application
 
-* Display users
+* User list
 * Create user
 * Edit user
 * Delete user
 * Form validation
 * Flash messages
-* Jinja2 templates
-* CSS styling
-* Confirmation before deleting a user
+* Jinja templates
 
 ### Database
 
 * SQLite
 * SQLAlchemy ORM
-* User model
-* Unique email constraint
+* Automatic table creation
+
+### Validation
+
+Marshmallow is used to validate API request data.
+
+Example validation:
+
+* Name is required
+* Name must contain at least 2 characters
+* Email is required
+* Email must be a valid email address
 
 ### Testing
 
-* pytest
-* Flask test client
-* In-memory SQLite database for tests
-* REST API tests
-* HTML route tests
+Pytest is used for automated testing.
+
+Test coverage includes:
+
+* API endpoints
+* CRUD operations
+* Validation
+* Duplicate emails
+* Not-found errors
+* HTML pages
+* Service layer
 
 ---
 
-## Project Architecture
-
-```text
-                    Browser
-                       |
-                       v
-                +--------------+
-                | Flask Routes |
-                +------+-------+
-                       |
-             +---------+---------+
-             |                   |
-             v                   v
-       REST API Routes      HTML Routes
-             |                   |
-             |                   v
-             |              Jinja Templates
-             |                   |
-             +---------+---------+
-                       |
-                       v
-                +--------------+
-                | User Service |
-                +------+-------+
-                       |
-                       v
-                +--------------+
-                | User Schema  |
-                +------+-------+
-                       |
-                       v
-                +--------------+
-                | User Model   |
-                +------+-------+
-                       |
-                       v
-                    SQLite
-```
-
----
-
-## Project Structure
+# Project Structure
 
 ```text
 flask-user-app/
@@ -108,6 +83,7 @@ flask-user-app/
 ├── extensions.py
 ├── requirements.txt
 ├── README.md
+├── .gitignore
 │
 ├── models/
 │   ├── __init__.py
@@ -123,12 +99,10 @@ flask-user-app/
 │
 ├── routes/
 │   ├── __init__.py
-│   ├── user_routes.py
 │   └── web_routes.py
 │
 ├── templates/
 │   ├── base.html
-│   │
 │   └── users/
 │       ├── list.html
 │       ├── create.html
@@ -137,7 +111,6 @@ flask-user-app/
 ├── static/
 │   ├── css/
 │   │   └── style.css
-│   │
 │   └── js/
 │       └── app.js
 │
@@ -150,15 +123,33 @@ flask-user-app/
 
 ---
 
-# Requirements
+# Architecture
 
-* Python 3.10+
-* Flask
-* Flask-SQLAlchemy
-* Flask-Marshmallow
-* Marshmallow
-* Flasgger
-* pytest
+The application follows a simple layered architecture:
+
+```text
+                Client
+                  │
+        ┌─────────┴─────────┐
+        │                   │
+     REST API            HTML/Jinja
+        │                   │
+        └─────────┬─────────┘
+                  │
+             web_routes.py
+                  │
+                  ▼
+            UserSchema
+                  │
+                  ▼
+           UserService
+                  │
+                  ▼
+             SQLAlchemy
+                  │
+                  ▼
+               SQLite
+```
 
 ---
 
@@ -171,25 +162,35 @@ git clone <repository-url>
 cd flask-user-app
 ```
 
-## 2. Create a virtual environment
+## 2. Create virtual environment
 
-### macOS / Linux
+macOS/Linux:
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
 ```
 
-### Windows
+Windows:
 
 ```bash
 python -m venv .venv
+```
+
+## 3. Activate virtual environment
+
+macOS/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Windows:
+
+```bash
 .venv\Scripts\activate
 ```
 
----
-
-## 3. Install dependencies
+## 4. Install dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -199,19 +200,11 @@ pip install -r requirements.txt
 
 # Run the Application
 
-Start Flask:
-
-```bash
-flask --app app run --debug
-```
-
-Or:
-
 ```bash
 python app.py
 ```
 
-The application will normally be available at:
+The application will be available at:
 
 ```text
 http://127.0.0.1:5000
@@ -219,193 +212,49 @@ http://127.0.0.1:5000
 
 ---
 
-# HTML Web Application
+# HTML Application
 
 Open:
 
 ```text
-http://127.0.0.1:5000/users
+http://127.0.0.1:5000/
 ```
 
-You will see the User Management interface.
-
-## User List
-
-The user list provides:
-
-* User ID
-* Name
-* Email
-* Edit button
-* Delete button
-* Add User button
-
-Example:
-
-```text
-+------------------------------------------------------+
-| Users                                  [Add User]    |
-+------------------------------------------------------+
-| ID | Name          | Email             | Actions     |
-+----+---------------+-------------------+-------------+
-| 1  | John          | john@example.com  | Edit Delete  |
-| 2  | David         | david@example.com | Edit Delete  |
-+----+---------------+-------------------+-------------+
-```
-
----
-
-# HTML Routes
-
-| Method | URL                  | Description         |
-| ------ | -------------------- | ------------------- |
-| GET    | `/users`             | Display all users   |
-| GET    | `/users/create`      | Display create form |
-| POST   | `/users/create`      | Create user         |
-| GET    | `/users/<id>/edit`   | Display edit form   |
-| POST   | `/users/<id>/edit`   | Update user         |
-| POST   | `/users/<id>/delete` | Delete user         |
-
----
-
-# Creating a User
-
-Open:
-
-```text
-http://127.0.0.1:5000/users/create
-```
-
-Enter:
-
-```text
-Name: John
-Email: john@example.com
-```
-
-Click:
-
-```text
-Create User
-```
-
-The application will:
-
-```text
-HTML Form
-    ↓
-Web Route
-    ↓
-User Service
-    ↓
-User Model
-    ↓
-SQLite
-```
-
-After successful creation, the user is redirected to:
+The root URL redirects to:
 
 ```text
 /users
 ```
 
----
+## HTML Routes
 
-# Editing a User
-
-From the user list, click:
-
-```text
-Edit
-```
-
-The application opens:
-
-```text
-/users/<id>/edit
-```
-
-For example:
-
-```text
-/users/1/edit
-```
-
-The existing user information is displayed:
-
-```text
-Name:
-[John]
-
-Email:
-[john@example.com]
-
-[Update User] [Cancel]
-```
-
-After updating:
-
-```text
-Edit Form
-    ↓
-Web Route
-    ↓
-User Service
-    ↓
-User Model
-    ↓
-SQLite
-```
-
----
-
-# Deleting a User
-
-Click:
-
-```text
-Delete
-```
-
-The browser asks for confirmation:
-
-```text
-Are you sure you want to delete this user?
-```
-
-If confirmed:
-
-```text
-POST /users/<id>/delete
-```
-
-The user is removed from the database.
-
-A success message is displayed:
-
-```text
-User deleted successfully.
-```
+| Method | Endpoint             | Description       |
+| ------ | -------------------- | ----------------- |
+| GET    | `/`                  | Redirect to users |
+| GET    | `/users`             | Display users     |
+| GET    | `/users/create`      | Create-user form  |
+| POST   | `/users/create`      | Create user       |
+| GET    | `/users/<id>/edit`   | Edit-user form    |
+| POST   | `/users/<id>/edit`   | Update user       |
+| POST   | `/users/<id>/delete` | Delete user       |
 
 ---
 
 # REST API
 
-The application also provides a REST API.
+The REST API uses:
+
+```text
+/api/users
+```
 
 ## Get All Users
 
 ```http
-GET /users
+GET /api/users
 ```
 
-Example:
-
-```bash
-curl http://127.0.0.1:5000/users
-```
-
-Response:
+Example response:
 
 ```json
 [
@@ -422,91 +271,95 @@ Response:
 ## Get User
 
 ```http
-GET /users/<id>
+GET /api/users/1
 ```
 
 Example:
-
-```bash
-curl http://127.0.0.1:5000/users/1
-```
-
-Response:
 
 ```json
 {
     "id": 1,
     "name": "John",
     "email": "john@example.com"
+}
+```
+
+If the user doesn't exist:
+
+```http
+404 Not Found
+```
+
+```json
+{
+    "error": "User not found"
 }
 ```
 
 ---
 
-## Create User
+# Create User
 
 ```http
-POST /users
+POST /api/users
 ```
 
-Example:
-
-```bash
-curl -X POST http://127.0.0.1:5000/users \
--H "Content-Type: application/json" \
--d '{
-    "name": "John",
-    "email": "john@example.com"
-}'
-```
-
-Response:
+Request:
 
 ```json
 {
-    "id": 1,
     "name": "John",
     "email": "john@example.com"
 }
 ```
 
-HTTP status:
+Response:
 
-```text
+```http
 201 Created
 ```
 
----
-
-## Update User
-
-```http
-PUT /users/<id>
+```json
+{
+    "id": 1,
+    "name": "John",
+    "email": "john@example.com"
+}
 ```
 
-Example:
+---
 
-```bash
-curl -X PUT http://127.0.0.1:5000/users/1 \
--H "Content-Type: application/json" \
--d '{
+# Update User
+
+```http
+PUT /api/users/1
+```
+
+Request:
+
+```json
+{
     "name": "John Updated",
     "email": "john.updated@example.com"
-}'
+}
+```
+
+Response:
+
+```json
+{
+    "id": 1,
+    "name": "John Updated",
+    "email": "john.updated@example.com"
+}
 ```
 
 ---
 
-## Delete User
+# Delete User
 
 ```http
-DELETE /users/<id>
-```
-
-Example:
-
-```bash
-curl -X DELETE http://127.0.0.1:5000/users/1
+DELETE /api/users/1
 ```
 
 Response:
@@ -519,70 +372,21 @@ Response:
 
 ---
 
-# API Status Codes
+# Validation
 
-| Status | Meaning               |
-| ------ | --------------------- |
-| 200    | Successful request    |
-| 201    | User created          |
-| 400    | Invalid request       |
-| 404    | User not found        |
-| 409    | Duplicate email       |
-| 500    | Internal server error |
+Marshmallow validates incoming API requests.
 
----
-
-# User Model
-
-The `User` model represents the database table.
+`schemas/user_schema.py`:
 
 ```python
-class User(db.Model):
+from marshmallow import Schema, fields, validate
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
 
-    name = db.Column(
-        db.String(100),
-        nullable=False
-    )
-
-    email = db.Column(
-        db.String(150),
-        unique=True,
-        nullable=False
-    )
-```
-
-The model is responsible for the **database structure and persistence**.
-
-```text
-User Model
-     ↓
-SQLAlchemy
-     ↓
-SQLite
-```
-
----
-
-# User Schema
-
-The `UserSchema` is responsible for **request validation and serialization/deserialization**.
-
-Example:
-
-```python
 class UserSchema(Schema):
 
     name = fields.Str(
         required=True,
-        validate=validate.Length(
-            min=2,
-            max=100
-        )
+        validate=validate.Length(min=2, max=100)
     )
 
     email = fields.Email(
@@ -590,85 +394,103 @@ class UserSchema(Schema):
     )
 ```
 
-For example, this request:
+Invalid request example:
 
 ```json
 {
     "name": "J",
-    "email": "invalid"
+    "email": "invalid-email"
 }
 ```
 
-will fail validation.
+Response:
 
----
-
-# Model vs Schema
-
-The project intentionally separates the database model from API validation.
-
-| User Model               | User Schema            |
-| ------------------------ | ---------------------- |
-| Database layer           | API validation layer   |
-| SQLAlchemy               | Marshmallow            |
-| Defines database columns | Defines API data rules |
-| Primary key              | Required fields        |
-| Database constraints     | Email validation       |
-| Relationships            | Length validation      |
-
-Simple rule:
-
-```text
-Model  → How should the data be stored?
-
-Schema → What data should the API accept/return?
+```http
+400 Bad Request
 ```
 
 ---
 
 # Service Layer
 
-Business logic is placed inside:
+Business logic is kept inside:
 
 ```text
 services/user_service.py
 ```
 
-Example:
+The service handles:
 
-```python
-class UserService:
-
-    def create_user(self, name, email):
-        ...
+```text
+create_user()
+get_users()
+get_user()
+update_user()
+delete_user()
 ```
 
-Routes should not contain database logic.
+The route should not directly perform database operations.
 
 Instead:
 
 ```text
 Route
   ↓
-Service
+UserService
   ↓
-Model
+User Model
   ↓
 Database
 ```
 
-This makes the application easier to:
+This keeps the application easier to maintain and test.
 
-* Test
-* Maintain
-* Extend
-* Refactor
+---
+
+# Database
+
+The project uses SQLite:
+
+```text
+users.db
+```
+
+SQLAlchemy is used as the ORM.
+
+User model:
+
+```text
+User
+ ├── id
+ ├── name
+ └── email
+```
+
+The database tables are automatically created when the application starts.
+
+The SQLite database is excluded from Git using `.gitignore`.
+
+---
+
+# Flask Secret Key
+
+The application uses a Flask secret key because the HTML application uses `flash()` messages.
+
+Example:
+
+```python
+app.config["SECRET_KEY"] = "dev-secret-key"
+```
+
+For production, the secret should be provided through an environment variable rather than hard-coded.
 
 ---
 
 # Swagger API Documentation
 
-Swagger documentation is available at:
+Swagger is provided using Flasgger.
+
+After starting the application, open:
 
 ```text
 http://127.0.0.1:5000/apidocs/
@@ -676,20 +498,11 @@ http://127.0.0.1:5000/apidocs/
 
 Swagger provides an interactive interface for testing the REST API.
 
-You can test:
-
-```text
-GET
-POST
-PUT
-DELETE
-```
-
-directly from the browser.
-
 ---
 
 # Testing
+
+Tests are written using Pytest.
 
 Run all tests:
 
@@ -697,166 +510,134 @@ Run all tests:
 pytest
 ```
 
-Run with verbose output:
+Example output:
+
+```text
+======================== test session starts ========================
+
+tests/test_users_api.py ........
+tests/test_users_web.py ........
+
+========================= 16 passed ================================
+```
+
+---
+
+# Test Coverage
+
+Install coverage support:
 
 ```bash
-pytest -v
+pip install pytest-cov
+```
+
+Run tests with coverage:
+
+```bash
+pytest --cov=. --cov-report=term-missing
 ```
 
 Example:
 
 ```text
-tests/
-├── conftest.py
-├── test_users_api.py
-└── test_users_web.py
+Name                         Stmts   Miss  Cover
+------------------------------------------------
+app.py                          25      2    92%
+models/user.py                 12      0   100%
+routes/web_routes.py            45      2    96%
+services/user_service.py        40      0   100%
+schemas/user_schema.py          10      0   100%
+------------------------------------------------
+TOTAL                          132      4    97%
 ```
 
-The tests use an in-memory SQLite database:
+Generate an HTML coverage report:
+
+```bash
+pytest --cov=. --cov-report=html
+```
+
+Then open:
 
 ```text
-sqlite:///:memory:
-```
-
-This prevents tests from modifying the development database.
-
----
-
-# Testing REST API
-
-Example:
-
-```python
-def test_create_user(client):
-
-    response = client.post(
-        "/users",
-        json={
-            "name": "John",
-            "email": "john@example.com"
-        }
-    )
-
-    assert response.status_code == 201
+htmlcov/index.html
 ```
 
 ---
 
-# Testing HTML
+# Recommended Coverage
 
-Example:
+The target for this project is:
 
-```python
-def test_users_page(client):
+```text
+90%+
+```
 
-    response = client.get("/users")
+The most important code to cover is:
 
-    assert response.status_code == 200
-    assert b"Users" in response.data
+* Service logic
+* API endpoints
+* Validation
+* Error handling
+* CRUD operations
+
+100% coverage is not required if some code is trivial or not meaningful to test.
+
+---
+
+# API Test Cases
+
+The API tests cover:
+
+### Users
+
+```text
+✓ Get users
+✓ Create user
+✓ Get user
+✓ Get non-existing user
+✓ Update user
+✓ Update non-existing user
+✓ Delete user
+✓ Delete non-existing user
+```
+
+### Validation
+
+```text
+✓ Missing name
+✓ Missing email
+✓ Invalid email
+✓ Invalid name
+✓ Empty request
+```
+
+### Business Rules
+
+```text
+✓ Duplicate email
 ```
 
 ---
 
-# Database
+# HTTP Status Codes
 
-The application uses SQLite.
-
-The development database is automatically created when the application starts.
-
-Example:
-
-```text
-users.db
-```
-
-Database table:
-
-```text
-users
--------------------------
-id
-name
-email
-```
-
-The email column is unique:
-
-```python
-unique=True
-```
-
-Therefore duplicate emails are rejected.
-
----
-
-# Flash Messages
-
-The HTML application uses Flask flash messages.
-
-Success:
-
-```text
-User created successfully.
-```
-
-Error:
-
-```text
-Email already exists.
-```
-
-The messages are displayed in the Jinja template using:
-
-```python
-get_flashed_messages()
-```
-
----
-
-# Configuration
-
-For development, the application currently uses:
-
-```python
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
-```
-
-For a production application, configuration should be moved to environment variables.
-
-Example:
-
-```text
-DATABASE_URL
-SECRET_KEY
-FLASK_ENV
-```
+| Status | Meaning                  |
+| ------ | ------------------------ |
+| 200    | Successful request       |
+| 201    | Resource created         |
+| 400    | Invalid request          |
+| 404    | User not found           |
+| 409    | Duplicate email/conflict |
 
 ---
 
 # Useful Commands
 
-Create virtual environment:
+Start application:
 
 ```bash
-python3 -m venv .venv
-```
-
-Activate environment:
-
-```bash
-source .venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run Flask:
-
-```bash
-flask --app app run --debug
+python app.py
 ```
 
 Run tests:
@@ -865,22 +646,42 @@ Run tests:
 pytest
 ```
 
-Run tests verbosely:
+Run tests with coverage:
 
 ```bash
-pytest -v
+pytest --cov=. --cov-report=term-missing
 ```
 
-Check installed packages:
+Generate HTML coverage:
 
 ```bash
-pip list
+pytest --cov=. --cov-report=html
 ```
 
-Generate requirements:
+Check Git status:
 
 ```bash
-pip freeze > requirements.txt
+git status
+```
+
+---
+
+# Git
+
+The project contains a `.gitignore` file to exclude:
+
+```text
+.venv/
+__pycache__/
+*.pyc
+users.db
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+.vscode/
+.idea/
+.DS_Store
 ```
 
 ---
@@ -889,99 +690,97 @@ pip freeze > requirements.txt
 
 This project demonstrates the following Flask concepts:
 
-* Flask application factory
+* Flask application setup
+* Application factory
 * Blueprints
 * REST APIs
 * HTTP methods
-* JSON responses
-* Jinja2 templates
+* JSON requests/responses
+* Jinja templates
 * HTML forms
-* SQLAlchemy ORM
+* Flash messages
+* SQLAlchemy
 * SQLite
 * Service layer
-* Marshmallow schemas
-* Input validation
+* Marshmallow validation
 * Error handling
-* Flash messages
 * Swagger/OpenAPI
-* Unit testing
-* Integration testing
-* Application configuration
-* Project structure
-* Python docstrings
+* Pytest
+* Test coverage
+* Git/GitHub project structure
+
+---
+
+# Current Architecture
+
+The project intentionally keeps the architecture simple:
+
+```text
+Routes
+   │
+   ▼
+Validation
+   │
+   ▼
+Service
+   │
+   ▼
+Model
+   │
+   ▼
+SQLite
+```
+
+The REST API and HTML application are both handled through:
+
+```text
+routes/web_routes.py
+```
+
+The API uses:
+
+```text
+/api/users
+```
+
+while the HTML application uses:
+
+```text
+/users
+```
+
+This prevents the API from returning JSON when accessing the web application.
 
 ---
 
 # Future Improvements
 
-The application can be extended with:
+Possible next improvements:
 
-1. JWT authentication
-2. Password hashing
-3. Login and logout
-4. Role-based authorization
-5. User registration
-6. Pagination
-7. Search and filtering
-8. Sorting
-9. Database migrations with Flask-Migrate
-10. Environment-based configuration
-11. Structured logging
-12. Docker
-13. CI/CD
-14. PostgreSQL
-15. Redis
-16. Rate limiting
-17. API versioning
-18. Production deployment
-19. Repository pattern
-20. React/Next.js frontend
+* JWT authentication
+* Password hashing
+* User registration/login
+* Role-based authorization
+* Pagination
+* Search/filtering
+* Flask-Migrate
+* PostgreSQL
+* Docker
+* CI/CD
+* Redis
+* Rate limiting
+* API versioning
+* React/Next.js frontend
+* Better application configuration
+* Production logging
+* Structured error responses
 
----
-
-# Recommended Next Step
-
-The next major feature should be **authentication**.
-
-The application can evolve into:
-
-```text
-                    Flask Application
-                           |
-             +-------------+-------------+
-             |                           |
-          HTML App                    REST API
-             |                           |
-             +-------------+-------------+
-                           |
-                     Authentication
-                           |
-                    JWT / Password
-                           |
-                       UserService
-                           |
-                        User Model
-                           |
-                        Database
-```
-
-Authentication would introduce:
-
-```text
-POST /auth/register
-POST /auth/login
-POST /auth/logout
-GET  /users
-GET  /users/<id>
-POST /users
-PUT  /users/<id>
-DELETE /users/<id>
-```
-
-with protected endpoints and authenticated users.
+Authentication is intentionally **not included yet** so the project can focus on understanding Flask CRUD, validation, service architecture, and testing first.
 
 ---
 
-# License
+# Author
 
-This project is intended for learning and demonstration purposes.
+Flask User Management Learning Project
+
+Built to understand Flask REST API and web application architecture step by step.

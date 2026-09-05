@@ -21,23 +21,6 @@ Users
 
     </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-
-        {% if messages %}
-
-            {% for category, message in messages %}
-
-                <div class="alert {{ category }}">
-                    {{ message }}
-                </div>
-
-            {% endfor %}
-
-        {% endif %}
-
-    {% endwith %}
-
-
     <table>
 
         <thead>
@@ -55,17 +38,11 @@ Users
 
             <tr>
 
-                <td>
-                    {{ user.id }}
-                </td>
+                <td>{{ user.id }}</td>
 
-                <td>
-                    {{ user.name }}
-                </td>
+                <td>{{ user.name }}</td>
 
-                <td>
-                    {{ user.email }}
-                </td>
+                <td>{{ user.email }}</td>
 
                 <td>
 
