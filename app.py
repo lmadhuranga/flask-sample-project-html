@@ -2,6 +2,7 @@ from flask import Flask
 from flasgger import Swagger
 from extensions import db 
 from routes.web_routes import web_bp
+from routes.api_routes import api_bp
 from seed import seed_fake_users
 
 def create_app(test_config=None):
@@ -29,6 +30,7 @@ def create_app(test_config=None):
     db.init_app(app)
  
     app.register_blueprint(web_bp)
+    app.register_blueprint(api_bp)
 
     Swagger(app)
 

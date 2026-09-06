@@ -7,9 +7,7 @@ Create User
 {% block content %}
 
 <div class="row justify-content-center">
-
     <div class="col-md-6">
-
         <div class="card shadow-sm">
 
             <div class="card-header">
@@ -17,21 +15,13 @@ Create User
             </div>
 
             <div class="card-body">
-
                 <form method="POST">
-
                     <div class="mb-3">
                         <label class="form-label">
                             Name
                         </label>
 
-                        <input
-                            type="text"
-                            name="name"
-                            class="form-control"
-                            placeholder="Enter name"
-                            required
-                        >
+                        <input type="text" name="name" class="form-control" placeholder="Enter name" required>
                     </div>
 
                     <div class="mb-3">
@@ -39,41 +29,19 @@ Create User
                             Email
                         </label>
 
-                        <input
-                            type="email"
-                            name="email"
-                            class="form-control"
-                            placeholder="Enter email"
-                            required
-                        >
+                        <input type="email" name="email" class="form-control" placeholder="Enter email" required>
                     </div>
 
                     <div class="d-flex gap-2">
-
-                        <button
-                            type="submit"
-                            class="btn btn-success"
-                        >
-                            Create User
-                        </button>
-
-                        <a
-                            href="{{ url_for('web.users') }}"
-                            class="btn btn-secondary"
-                        >
+                        <button type="submit" class="btn btn-success"> Create User </button>
+                        <a href="{{ url_for('web.users') }}" class="btn btn-secondary">
                             Cancel
                         </a>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 {% endblock %}
